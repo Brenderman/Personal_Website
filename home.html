@@ -4,216 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosmic Tree of Ideas</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #03030c;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #ffffff;
-        }
-
-        /* Fullscreen Canvas for Starfield & Space Background */
-        #spaceCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* Main UI Container */
-        .container {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Galaxy Container positioned at the base */
-        .galaxy-wrapper {
-            position: absolute;
-            bottom: 10%;
-            width: 600px;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none;
-        }
-
-        .galaxy {
-            width: 500px;
-            height: 250px;
-            background: radial-gradient(ellipse at center, rgba(138, 43, 226, 0.6) 0%, rgba(0, 191, 255, 0.3) 40%, rgba(0,0,0,0) 70%);
-            border-radius: 50%;
-            animation: swirl 25s linear infinite;
-            box-shadow: 0 0 60px rgba(138, 43, 226, 0.4);
-        }
-
-        @keyframes swirl {
-            from { transform: rotate(0deg) scaleY(0.5); }
-            to { transform: rotate(360deg) scaleY(0.5); }
-        }
-
-        /* Tree & Branches Scene Area */
-        .tree-scene {
-            position: relative;
-            width: 800px;
-            height: 600px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-        }
-
-        /* Stylized Tree Trunk */
-        .tree-trunk {
-            position: absolute;
-            bottom: 20%;
-            width: 80px;
-            height: 250px;
-            background: linear-gradient(to right, #2c160b, #4a2511, #2c160b);
-            border-radius: 10px 10px 0 0;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-        }
-
-        /* Branch Nodes / Navigation Links */
-        .branches-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .branch-node {
-            position: absolute;
-            background: rgba(15, 15, 35, 0.85);
-            border: 2px solid rgba(0, 191, 255, 0.4);
-            border-radius: 12px;
-            padding: 12px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(0, 191, 255, 0.2);
-            backdrop-filter: blur(5px);
-        }
-
-        .branch-node:hover {
-            transform: scale(1.1);
-            border-color: rgba(255, 105, 180, 0.8);
-            box-shadow: 0 0 25px rgba(255, 105, 180, 0.5);
-            background: rgba(30, 20, 50, 0.9);
-        }
-
-        .branch-node h3 {
-            font-size: 16px;
-            letter-spacing: 1px;
-            margin-bottom: 3px;
-            color: #e0f7fa;
-        }
-
-        .branch-node span {
-            font-size: 11px;
-            color: #b0bec5;
-        }
-
-        /* Positioning the 5 branches based on your sketch layout */
-        #node-personal { top: 45%; left: 10%; }
-        #node-roulette { top: 20%; left: 25%; }
-        #node-anime { top: 5%; left: 43%; transform: translateX(-50%); }
-        #node-oc { top: 20%; right: 25%; }
-        #node-mystery { top: 45%; right: 10%; border-style: dashed; }
-
-        /* Title Footer */
-        .footer-title {
-            position: absolute;
-            bottom: 30px;
-            text-align: center;
-            width: 100%;
-            z-index: 2;
-        }
-
-        .footer-title h1 {
-            font-size: 1.2rem;
-            font-weight: 300;
-            letter-spacing: 3px;
-            color: rgba(255, 255, 255, 0.7);
-            text-transform: uppercase;
-        }
-
-        /* Modal popup style when clicking a branch */
-        #modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        #modal.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
-            background: #111125;
-            border: 2px solid #00bcd4;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 400px;
-            box-shadow: 0 0 30px rgba(0, 188, 212, 0.4);
-        }
-
-        .modal-content h2 {
-            margin-bottom: 15px;
-            color: #00bcd4;
-        }
-
-        .modal-content p {
-            margin-bottom: 25px;
-            color: #cfd8dc;
-            font-size: 14px;
-        }
-
-        .close-btn {
-            background: #00bcd4;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .close-btn:hover {
-            background: #26c6da;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="home-page">
 
     <!-- Space Background Starfield -->
     <canvas id="spaceCanvas"></canvas>
@@ -229,26 +22,26 @@
             <div class="tree-trunk"></div>
             
             <div class="branches-container">
-                <div class="branch-node" id="node-personal" onclick="openProject('Personal Project')">
+                <a class="branch-node" id="node-personal" href="personal.html">
                     <h3>Personal</h3>
                     <span>Project 01</span>
-                </div>
-                <div class="branch-node" id="node-roulette" onclick="openProject('Roulette Project')">
+                </a>
+                <a class="branch-node" id="node-roulette" href="roulette.html">
                     <h3>Roulette</h3>
                     <span>Project 02</span>
-                </div>
-                <div class="branch-node" id="node-anime" onclick="openProject('Anime Project')">
+                </a>
+                <a class="branch-node" id="node-anime" href="#">
                     <h3>Anime</h3>
                     <span>Project 03</span>
-                </div>
-                <div class="branch-node" id="node-oc" onclick="openProject('OC Lore & Art')">
+                </a>
+                <a class="branch-node" id="node-oc" href="#">
                     <h3>OC</h3>
                     <span>Project 04</span>
-                </div>
-                <div class="branch-node" id="node-mystery" onclick="openProject('Mystery Project')">
+                </a>
+                <a class="branch-node" id="node-mystery" href="#">
                     <h3>?</h3>
                     <span>Coming Soon</span>
-                </div>
+                </a>
             </div>
         </div>
 

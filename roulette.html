@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cosmic Roulette</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="roulette-page">
+    <div class="page">
+      <div class="game-shell">
+        <div class="info-panel">
+          <div class="eyebrow">Lucky spin</div>
+          <h1>Cosmic<br />Roulette</h1>
+          <p class="tagline">
+            Spin the wheel and let fate choose your next idea, challenge, or surprise. It’s part game,
+            part mood board, and all chaos in the best possible way.
+          </p>
+
+          <div class="button-row">
+            <button class="spin-btn" id="spinBtn">Spin the wheel</button>
+            <button class="reset-btn" id="resetBtn">Reset</button>
+          </div>
+
+          <a class="home-link" href="home.html">Back to home</a>
+
+          <div class="result-box">
+            <span class="result-label">Result</span>
+            <div class="result-value" id="result">Waiting...</div>
+          </div>
+        </div>
+
+        <div class="wheel-panel">
+          <div class="wheel-stage" aria-label="Roulette wheel game">
+            <div class="wheel-shadow"></div>
+            <div class="pointer" aria-hidden="true"></div>
+            <div class="wheel" id="wheel"></div>
+            <div class="segment-labels" id="labels"></div>
+            <div class="center-badge">GO</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+
+      const wheel = document.getElementById("wheel");
+      const labelsWrap = document.getElementById("labels");
+      const spinBtn = document.getElementById("spinBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const result = document.getElementById("result");
+
+      const segmentAngle = 360 / numbers.length;
+      let rotation = 0;
+      let canSpin = true;
+
+      const rouletteColors = {
+        0: "#7ad7ff", 32: "#f8f8f8", 15: "#ff8ac1", 19: "#f8f8f8", 4: "#ff8ac1", 21: "#f8f8f8",
+        2: "#ff8ac1", 25: "#f8f8f8", 17: "#ff8ac1", 34: "#f8f8f8", 6: "#ff8ac1", 27: "#f8f8f8",
+        13: "#ff8ac1", 36: "#f8f8f8", 11: "#ff8ac1", 30: "#f8f8f8", 8: "#ff8ac1", 23: "#f8f8f8",
+        10: "#ff8ac1", 5: "#f8f8f8", 24: "#ff8ac1", 16: "#f8f8f8", 33: "#ff8ac1", 1: "#f8f8f8",
+        20: "#ff8ac1", 14: "#f8f8f8", 31: "#ff8ac1", 9: "#f8f8f8", 22: "#ff8ac1", 18: "#f8f8f8",
+        29: "#ff8ac1", 7: "#f8f8f8", 28: "#ff8ac1", 12: "#f8f8f8", 35: "#ff8ac1", 3: "#f8f8f8",
+        26: "#ff8ac1"
+      };
+
+      function renderWheel() {
+        const gradientStops = [];
+        numbers.forEach((number, index) => {
+          const start = index * segmentAngle;
+          const end = (index + 1) * segmentAngle;
+          const color = rouletteColors[number] || "#8ad9ff";
+          gradientStops.push(`${color} ${start}deg ${end}deg`);
+        });
+
+        wheel.style.background = `conic-gradient(from -90deg, ${gradientStops.join(", ")})`;
+
+        labelsWrap.innerHTML = "";
+
+        numbers.forEach((number, index) => {
+          const label = document.createElement("span");
+          const angle = index * segmentAngle + segmentAngle / 2;
+          const radius = 130;
+          const x = 50 + Math.cos((angle - 90) * (Math.PI / 180)) * radius * 0.38;
+          const y = 50 + Math.sin((angle - 90) * (Math.PI / 180)) * radius * 0.38;
+
+          label.textContent = number;
+          label.style.left = `${x}%`;
+          label.style.top = `${y}%`;
+          label.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+          label.style.color = number === 0 ? "#071521" : "#f8fbff";
+          labelsWrap.appendChild(label);
+        });
+      }
+
+      function setResult(value) {
+        result.textContent = value;
+      }
+
+      function spinWheel() {
+        if (!canSpin) return;
+
+        const randomIndex = Math.floor(Math.random() * numbers.length);
+        const targetRotation = 360 * (6 + Math.floor(Math.random() * 4)) + (360 - ((randomIndex * segmentAngle) + (segmentAngle / 2)));
+
+        rotation += targetRotation;
+        wheel.style.transform = `rotate(${rotation}deg)`;
+        canSpin = false;
+        spinBtn.disabled = true;
+
+        setTimeout(() => {
+          canSpin = true;
+          spinBtn.disabled = false;
+          setResult(String(numbers[randomIndex]));
+        }, 5000);
+      }
+
+      function resetWheel() {
+        wheel.style.transform = "rotate(0deg)";
+        rotation = 0;
+        setResult("Waiting...");
+      }
+
+      spinBtn.addEventListener("click", spinWheel);
+      resetBtn.addEventListener("click", resetWheel);
+
+      renderWheel();
+      setResult("Waiting...");
+    </script>
+  </body>
+</html>
